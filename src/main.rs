@@ -1,3 +1,7 @@
+mod color;
+mod vec3;
+use crate::{color::write_color, vec3::Vec3};
+
 fn main() {
     let image_width = 256;
     let image_height = 256;
@@ -14,12 +18,8 @@ fn main() {
             let r = i as f64 / (image_width - 1) as f64;
             let g = j as f64 / (image_height - 1) as f64;
             let b = 0.0;
-
-            let ir = (255.0 * r) as i32;
-            let ig = (255.0 * g) as i32;
-            let ib = (255.0 * b) as i32;
-
-            println!("{ir} {ig} {ib}")
+            let pixel_color = Vec3::new(r, g, b);
+            write_color(&pixel_color);
         }
     }
     eprintln!("Done")
