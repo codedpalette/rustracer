@@ -1,6 +1,6 @@
 use crate::vec3::Vec3;
 
-type Color = Vec3;
+pub type Color = Vec3;
 
 pub fn write_color(color: &Color) {
     let ir = (255.0 * color.x) as i32;
