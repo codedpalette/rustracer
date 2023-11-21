@@ -1,12 +1,11 @@
 use std::ops::Range;
 
 use crate::{
+    hittable::{Hit, Hittable},
     range::Interval,
     ray::Ray,
     vec3::{Point, Vec3},
 };
-
-use super::hittable::{Hit, Hittable};
 
 pub struct Sphere {
     pub center: Point,

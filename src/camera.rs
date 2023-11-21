@@ -2,8 +2,8 @@ use std::cmp::max;
 
 use crate::{
     color::{write_color, Color},
+    hittable::Hittable,
     ray::Ray,
-    surface::hittable::Hittable,
     vec3::{Point, Vec3},
 };
 

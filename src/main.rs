@@ -1,12 +1,13 @@
 mod camera;
 mod color;
+mod hittable;
 mod range;
 mod ray;
-mod surface;
+mod sphere;
 mod vec3;
 use camera::Camera;
-use surface::hittable::HittableList;
-use surface::sphere::Sphere;
+use hittable::HittableList;
+use sphere::Sphere;
 use vec3::Point;
 
 fn main() {
