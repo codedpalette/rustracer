@@ -29,9 +29,9 @@ pub trait Hittable {
     fn hit(&self, ray: &Ray, t_range: Range<f64>) -> Option<Hit>;
 }
 
-pub type HittableList<'a> = Vec<&'a dyn Hittable>;
+pub type HittableList = Vec<Box<dyn Hittable>>;
 
-impl<'a> Hittable for HittableList<'a> {
+impl Hittable for HittableList {
     fn hit(&self, ray: &Ray, t_range: Range<f64>) -> Option<Hit> {
         let mut hit_anything = None;
         let mut closest_so_far = t_range.end;
