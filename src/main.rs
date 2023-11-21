@@ -4,6 +4,7 @@ mod hittable;
 mod range;
 mod ray;
 mod sphere;
+mod util;
 mod vec3;
 use camera::Camera;
 use hittable::HittableList;
@@ -19,8 +20,9 @@ fn main() {
 
     //Camera
     let aspect_ratio = 16.0 / 9.0;
-    let image_width = 800;
-    let camera = Camera::new(aspect_ratio, image_width);
+    let image_width = 400;
+    let samples_per_pixel = 100;
+    let camera = Camera::new(aspect_ratio, image_width, samples_per_pixel);
 
     camera.render(&world)
 }
