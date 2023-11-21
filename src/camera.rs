@@ -67,18 +67,18 @@ impl Camera {
                 let ray_direction = pixel_center - self.center;
                 let ray = Ray::new(self.center, ray_direction);
 
-                let pixel_color = Camera::ray_color(&ray, world);
-                write_color(&pixel_color);
+                let pixel_color = Camera::ray_color(ray, world);
+                write_color(pixel_color);
             }
         }
         eprintln!("Done")
     }
 
-    fn ray_color(ray: &Ray, world: &dyn Hittable) -> Color {
+    fn ray_color(ray: Ray, world: &dyn Hittable) -> Color {
         if let Some(hit) = world.hit(ray, 0.0..f64::INFINITY) {
             return 0.5 * (hit.normal + 1.0);
         }
-        let unit_direction = ray.dir.normalize();
+        let unit_direction = ray.direction.normalize();
         let a = 0.5 * (unit_direction.y + 1.0);
         (1.0 - a) * Color::new(1.0, 1.0, 1.0) + a * Color::new(0.5, 0.7, 1.0)
     }

@@ -19,10 +19,12 @@ impl Sphere {
 }
 
 impl Hittable for Sphere {
-    fn hit(&self, ray: &Ray, t_range: Range<f64>) -> Option<Hit> {
-        let oc = ray.orig - self.center;
-        let a = ray.dir.length_squared();
-        let half_b = Vec3::dot(&oc, &ray.dir);
+    fn hit(&self, ray: Ray, t_range: Range<f64>) -> Option<Hit> {
+        // Define coefficients of a quadratic equation for `t` in order to
+        // determine ray-sphere intersection points
+        let oc = ray.origin - self.center;
+        let a = ray.direction.length_squared();
+        let half_b = Vec3::dot(oc, ray.direction);
         let c = oc.length_squared() - self.radius * self.radius;
 
         let discriminant = half_b * half_b - a * c;

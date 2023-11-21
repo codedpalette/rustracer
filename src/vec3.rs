@@ -33,15 +33,15 @@ impl Vec3 {
         self.length_squared().sqrt()
     }
 
-    pub fn normalize(self) -> Vec3 {
+    pub fn normalize(&self) -> Vec3 {
         self / self.length()
     }
 
-    pub fn dot(a: &Vec3, b: &Vec3) -> f64 {
+    pub fn dot(a: Vec3, b: Vec3) -> f64 {
         return a.x * b.x + a.y * b.y + a.z * b.z;
     }
 
-    pub fn cross(a: &Vec3, b: &Vec3) -> Vec3 {
+    pub fn cross(a: Vec3, b: Vec3) -> Vec3 {
         return Vec3 {
             x: a.y * b.z - a.z * b.y,
             y: a.z * b.x - a.x * b.z,
