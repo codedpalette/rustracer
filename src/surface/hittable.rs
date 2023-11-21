@@ -4,10 +4,10 @@ use crate::ray::Ray;
 use crate::vec3::{Point, Vec3};
 
 pub struct Hit {
-    pub p: Point,
-    pub normal: Vec3,
-    pub t: f64,
-    pub front_face: bool,
+    pub p: Point,         // hit point coordinates
+    pub normal: Vec3,     // surface normal at hit point
+    pub t: f64,           // distance along the ray from ray's origin to hit point
+    pub front_face: bool, // if true, hit ocurred from the front face side
 }
 
 impl Hit {
@@ -29,9 +29,9 @@ pub trait Hittable {
     fn hit(&self, ray: &Ray, t_range: Range<f64>) -> Option<Hit>;
 }
 
-pub type HittableList = Vec<Box<dyn Hittable>>;
+pub type HittableList<'a> = Vec<&'a dyn Hittable>;
 
-impl Hittable for HittableList {
+impl<'a> Hittable for HittableList<'a> {
     fn hit(&self, ray: &Ray, t_range: Range<f64>) -> Option<Hit> {
         let mut hit_anything = None;
         let mut closest_so_far = t_range.end;

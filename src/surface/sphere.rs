@@ -34,15 +34,16 @@ impl Hittable for Sphere {
 
         // Find the nearest root that lies in the acceptable range
         let mut root = (-half_b - sqrtd) / a;
-        if !t_range.surrounds(&root) {
+        if !t_range.surrounds(root) {
             root = (-half_b + sqrtd) / a;
-            if !t_range.surrounds(&root) {
+            if !t_range.surrounds(root) {
                 return None;
             }
         }
 
         let t = root;
-        let outward_normal = (ray.at(t) - self.center) / self.radius;
+        let hit_point = ray.at(t);
+        let outward_normal = (hit_point - self.center) / self.radius;
         Some(Hit::new(ray, t, outward_normal))
     }
 }
