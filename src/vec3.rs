@@ -5,7 +5,7 @@ use std::{
 
 use crate::util::{random_double, random_double_ranged};
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone)]
 pub struct Vec3 {
     pub x: f64,
     pub y: f64,
@@ -84,6 +84,16 @@ impl Vec3 {
         } else {
             -on_unit_sphere
         }
+    }
+
+    // Return true if the vector is close to zero in all dimensions.
+    pub fn near_zero(&self) -> bool {
+        let eps = 1e-8;
+        self.x.abs() < eps && self.y.abs() < eps && self.z.abs() < eps
+    }
+
+    pub fn reflect(v: Vec3, n: Vec3) -> Vec3 {
+        v - 2.0 * Vec3::dot(v, n) * n
     }
 }
 

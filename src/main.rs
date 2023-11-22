@@ -1,27 +1,37 @@
 mod camera;
 mod color;
 mod hittable;
+mod material;
 mod range;
 mod ray;
 mod sphere;
 mod util;
 mod vec3;
 use camera::Camera;
+use color::Color;
 use hittable::HittableList;
+use material::{Lambertian, Metal};
 use sphere::Sphere;
 use vec3::Point;
 
 fn main() {
+    // Materials
+    let ground = Lambertian::new(Color::new(0.8, 0.8, 0.0));
+    let center = Lambertian::new(Color::new(0.7, 0.3, 0.3));
+    let left = Metal::new(Color::new(0.8, 0.8, 0.8), 0.3);
+    let right = Metal::new(Color::new(0.8, 0.6, 0.2), 1.0);
+
     // World
-    let world: HittableList = vec![
-        Box::new(Sphere::new(Point::new(0.0, 0.0, -1.0), 0.5)),
-        Box::new(Sphere::new(Point::new(0.0, -100.5, -1.0), 100.0)),
-    ];
+    let sphere_ground = Sphere::new(Point::new(0.0, -100.5, -1.0), 100.0, &ground);
+    let sphere_center = Sphere::new(Point::new(0.0, 0.0, -1.0), 0.5, &center);
+    let sphere_left = Sphere::new(Point::new(-1.0, 0.0, -1.0), 0.5, &left);
+    let sphere_right = Sphere::new(Point::new(1.0, 0.0, -1.0), 0.5, &right);
+    let world: HittableList = vec![&sphere_ground, &sphere_center, &sphere_left, &sphere_right];
 
     //Camera
     let aspect_ratio = 16.0 / 9.0;
-    let image_width = 800;
-    let samples_per_pixel = 50;
+    let image_width = 400;
+    let samples_per_pixel = 100;
     let max_depth = 50;
     let camera = Camera::new(aspect_ratio, image_width, samples_per_pixel, max_depth);
 

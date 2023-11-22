@@ -107,12 +107,12 @@ impl Camera {
         // Ignore hits that are very close to the calculated intersection point to solve the "shadow acne"
         let t_range = 0.001..f64::INFINITY;
         if let Some(hit) = world.hit(ray, t_range) {
-            // Using Lambertian distribution for diffuse reflection. The reflection direction is a 
-            // random vector on the unit sphere centered at P + N where P is the hit point and N 
-            // is the surface normal vector.
-            let reflect_direction = hit.normal + Vec3::random_unit_vector();
-            return 0.5 * Camera::ray_color(Ray::new(hit.point, reflect_direction), depth - 1, world);
+            return match hit.material.scatter(ray, hit) {
+                Some(scatter) => scatter.attenuation * Camera::ray_color(scatter.ray, depth - 1, world),
+                None => Vec3::ZERO,
+            };
         }
+        // Background
         let unit_direction = ray.direction.normalize();
         let a = 0.5 * (unit_direction.y + 1.0);
         (1.0 - a) * Color::new(1.0, 1.0, 1.0) + a * Color::new(0.5, 0.7, 1.0)
