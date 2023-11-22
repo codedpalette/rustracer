@@ -3,6 +3,8 @@ use std::{
     ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign},
 };
 
+use crate::util::{random_double, random_double_ranged};
+
 #[derive(Copy, Clone, Debug)]
 pub struct Vec3 {
     pub x: f64,
@@ -38,15 +40,50 @@ impl Vec3 {
     }
 
     pub fn dot(a: Vec3, b: Vec3) -> f64 {
-        return a.x * b.x + a.y * b.y + a.z * b.z;
+        a.x * b.x + a.y * b.y + a.z * b.z
     }
 
     pub fn cross(a: Vec3, b: Vec3) -> Vec3 {
-        return Vec3 {
+        Vec3 {
             x: a.y * b.z - a.z * b.y,
             y: a.z * b.x - a.x * b.z,
             z: a.x * b.y - a.y * b.x,
-        };
+        }
+    }
+
+    pub fn random() -> Vec3 {
+        Vec3::new(random_double(), random_double(), random_double())
+    }
+
+    pub fn random_ranged(min: f64, max: f64) -> Vec3 {
+        Vec3::new(
+            random_double_ranged(min, max),
+            random_double_ranged(min, max),
+            random_double_ranged(min, max),
+        )
+    }
+
+    pub fn random_in_unit_sphere() -> Vec3 {
+        loop {
+            let p = Vec3::random_ranged(-1.0, 1.0);
+            if p.length_squared() < 1.0 {
+                return p;
+            }
+        }
+    }
+
+    pub fn random_unit_vector() -> Vec3 {
+        Vec3::random_in_unit_sphere().normalize()
+    }
+
+    pub fn random_on_hemisphere(normal: Vec3) -> Vec3 {
+        let on_unit_sphere = Vec3::random_unit_vector();
+        if Vec3::dot(on_unit_sphere, normal) > 0.0 {
+            // In the same hemisphere as the normal
+            on_unit_sphere
+        } else {
+            -on_unit_sphere
+        }
     }
 }
 

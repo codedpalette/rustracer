@@ -4,7 +4,7 @@ use crate::ray::Ray;
 use crate::vec3::{Point, Vec3};
 
 pub struct Hit {
-    pub p: Point,         // hit point coordinates
+    pub point: Point,     // hit point coordinates
     pub normal: Vec3,     // surface normal at hit point
     pub t: f64,           // distance along the ray from ray's origin to hit point
     pub front_face: bool, // if true, hit ocurred from the front face side
@@ -13,11 +13,11 @@ pub struct Hit {
 impl Hit {
     // Assume that outward_normal is normalized
     pub fn new(ray: Ray, t: f64, outward_normal: Vec3) -> Hit {
-        let p = ray.at(t);
+        let point = ray.at(t);
         let front_face = Vec3::dot(ray.direction, outward_normal) < 0.0;
         let normal = if front_face { outward_normal } else { -outward_normal };
         Hit {
-            p,
+            point,
             normal,
             t,
             front_face,
