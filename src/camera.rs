@@ -1,5 +1,7 @@
 use std::cmp::max;
 
+use indicatif::{ProgressBar, ProgressStyle};
+
 use crate::{
     color::{write_color, Color},
     hittable::Hittable,
@@ -58,11 +60,12 @@ impl Camera {
     }
 
     pub fn render(&self, world: &dyn Hittable) {
-        println!("P3\n{} {}\n255", self.image_width, self.image_height);
+        let pb = ProgressBar::new(self.image_height as u64);
+        pb.set_prefix("Scanlines remaining:");
+        pb.set_style(ProgressStyle::with_template("{prefix} {wide_bar} {pos}/{len}").unwrap());
 
+        println!("P3\n{} {}\n255", self.image_width, self.image_height);
         for j in 0..self.image_height {
-            let remaining = self.image_height - j;
-            eprintln!("Scanlines remaining: {remaining}");
             for i in 0..self.image_width {
                 let mut pixel_color = Vec3::ZERO;
                 for _ in 0..self.samples_per_pixel {
@@ -71,8 +74,9 @@ impl Camera {
                 }
                 write_color(pixel_color, self.samples_per_pixel);
             }
+            pb.inc(1);
         }
-        eprintln!("Done")
+        pb.finish_and_clear();
     }
 
     // Get a randomly sampled camera ray for the pixel at location i,j

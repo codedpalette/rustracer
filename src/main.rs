@@ -24,5 +24,6 @@ fn main() {
     let samples_per_pixel = 100;
     let camera = Camera::new(aspect_ratio, image_width, samples_per_pixel);
 
+    // TODO: execution time
     camera.render(&world)
 }
