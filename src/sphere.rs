@@ -8,14 +8,14 @@ use crate::{
     vec3::{Point, Vec3},
 };
 
-pub struct Sphere<'a> {
+pub struct Sphere {
     center: Point,
     radius: f64,
-    material: &'a dyn Material,
+    material: Box<dyn Material>,
 }
 
-impl<'a> Sphere<'a> {
-    pub fn new(center: Point, radius: f64, material: &dyn Material) -> Sphere {
+impl Sphere {
+    pub fn new(center: Point, radius: f64, material: Box<dyn Material>) -> Sphere {
         Sphere {
             center,
             radius,
@@ -24,7 +24,7 @@ impl<'a> Sphere<'a> {
     }
 }
 
-impl<'a> Hittable for Sphere<'a> {
+impl Hittable for Sphere {
     fn hit(&self, ray: Ray, t_range: Range<f64>) -> Option<Hit> {
         // Define coefficients of a quadratic equation for `t` in order to
         // determine ray-sphere intersection points
@@ -51,6 +51,6 @@ impl<'a> Hittable for Sphere<'a> {
         let t = root;
         let hit_point = ray.at(t);
         let outward_normal = (hit_point - self.center) / self.radius;
-        Some(Hit::new(ray, t, outward_normal, self.material))
+        Some(Hit::new(ray, t, outward_normal, self.material.as_ref()))
     }
 }

@@ -10,44 +10,68 @@ mod vec3;
 use camera::Camera;
 use color::Color;
 use hittable::HittableList;
-use material::{Dielectric, Lambertian, Metal};
+use material::{Dielectric, Lambertian, Material, Metal};
 use sphere::Sphere;
+use util::{random_double, random_double_ranged};
 use vec3::{Point, Vec3};
 
 fn main() {
-    // Materials
-    let ground = Lambertian::new(Color::new(0.8, 0.8, 0.0));
-    let center = Lambertian::new(Color::new(0.1, 0.2, 0.5));
-    let left = Dielectric::new(1.5);
-    let right = Metal::new(Color::new(0.8, 0.6, 0.2), 0.0);
+    let mut world: HittableList = vec![];
 
-    // World
-    let sphere_ground = Sphere::new(Point::new(0.0, -100.5, -1.0), 100.0, &ground);
-    let sphere_center = Sphere::new(Point::new(0.0, 0.0, -1.0), 0.5, &center);
-    let sphere_left = Sphere::new(Point::new(-1.0, 0.0, -1.0), 0.5, &left);
-    let sphere_left_inner = Sphere::new(Point::new(-1.0, 0.0, -1.0), -0.4, &left);
-    let sphere_right = Sphere::new(Point::new(1.0, 0.0, -1.0), 0.5, &right);
-    let world: HittableList = vec![
-        &sphere_ground,
-        &sphere_center,
-        &sphere_left,
-        &sphere_left_inner,
-        &sphere_right,
-    ];
+    let ground_material = Box::new(Lambertian::new(Color::new(0.5, 0.5, 0.5)));
+    world.push(Box::new(Sphere::new(
+        Point::new(0.0, -1000.0, 0.0),
+        1000.0,
+        ground_material,
+    )));
+
+    let base_point = Point::new(4.0, 0.2, 0.0);
+    for a in -11..11 {
+        for b in -11..11 {
+            let choose_mat = random_double();
+            let center = Point::new(a as f64 + 0.9 * random_double(), 0.2, b as f64 + 0.9 * random_double());
+
+            if (center - base_point).length() > 0.9 {
+                let material: Box<dyn Material> = if choose_mat < 0.8 {
+                    // diffuse
+                    let albedo = Color::random() * Color::random();
+                    Box::new(Lambertian::new(albedo))
+                } else if choose_mat < 0.95 {
+                    // metal
+                    let albedo = Color::random_ranged(0.5, 1.0);
+                    let fuzz = random_double_ranged(0.0, 0.5);
+                    Box::new(Metal::new(albedo, fuzz))
+                } else {
+                    // glass
+                    Box::new(Dielectric::new(1.5))
+                };
+                world.push(Box::new(Sphere::new(center, 0.2, material)));
+            }
+        }
+    }
+
+    let material1 = Box::new(Dielectric::new(1.5));
+    world.push(Box::new(Sphere::new(Point::new(0.0, 1.0, 0.0), 1.0, material1)));
+
+    let material2 = Box::new(Lambertian::new(Color::new(0.4, 0.2, 0.1)));
+    world.push(Box::new(Sphere::new(Point::new(-4.0, 1.0, 0.0), 1.0, material2)));
+
+    let material3 = Box::new(Metal::new(Color::new(0.7, 0.6, 0.5), 0.0));
+    world.push(Box::new(Sphere::new(Point::new(4.0, 1.0, 0.0), 1.0, material3)));
 
     //Camera
     let aspect_ratio = 16.0 / 9.0;
-    let image_width = 400;
-    let samples_per_pixel = 100;
+    let image_width = 1200;
+    let samples_per_pixel = 500;
     let max_depth = 50;
 
     let vfov = 20.0;
-    let look_from = Point::new(-2.0, 2.0, 1.0);
-    let look_at = Point::new(0.0, 0.0, -1.0);
+    let look_from = Point::new(13.0, 2.0, 3.0);
+    let look_at = Point::new(0.0, 0.0, 0.0);
     let vup = Vec3::new(0.0, 1.0, 0.0);
 
-    let defocus_angle = 10.0;
-    let focus_dist = 3.4;
+    let defocus_angle = 0.6;
+    let focus_dist = 10.0;
     let camera = Camera::new(
         aspect_ratio,
         image_width,
