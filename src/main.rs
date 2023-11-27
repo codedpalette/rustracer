@@ -85,6 +85,6 @@ fn main() {
         focus_dist,
     );
 
-    // TODO: execution time
+    // TODO: Execution time
     camera.render(&world)
 }
