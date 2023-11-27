@@ -95,6 +95,13 @@ impl Vec3 {
     pub fn reflect(v: Vec3, n: Vec3) -> Vec3 {
         v - 2.0 * Vec3::dot(v, n) * n
     }
+
+    pub fn refract(uv: Vec3, n: Vec3, refraction_ratio: f64) -> Vec3 {
+        let cos_theta = f64::min(Vec3::dot(-uv, n), 1.0);
+        let r_out_perpendicular = refraction_ratio * (uv + cos_theta * n);
+        let r_out_parallel = -(1.0 - r_out_perpendicular.length_squared()).abs().sqrt() * n;
+        r_out_perpendicular + r_out_parallel
+    }
 }
 
 // This macro helps us implement math operators on Vector3
