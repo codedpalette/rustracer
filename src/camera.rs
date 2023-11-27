@@ -6,12 +6,12 @@ use crate::{
     color::{write_color, Color},
     hittable::Hittable,
     ray::Ray,
-    util::random_double,
+    util::{degrees_to_radians, random_double},
     vec3::{Point, Vec3},
 };
 
 pub struct Camera {
-    pub aspect_ratio: f64,  // Ratio of image width over height
+    aspect_ratio: f64,      // Ratio of image width over height
     samples_per_pixel: i32, // Count of random samples for each pixel
     max_depth: i32,         // Maximum number of ray bounces into scene
     image_width: i32,       // Rendered image width in pixels
@@ -20,31 +20,50 @@ pub struct Camera {
     pixel00_loc: Point,     // Location of pixel 0, 0
     pixel_delta_u: Vec3,    // Offset to pixel to the right
     pixel_delta_v: Vec3,    // Offset to pixel below
+    // Camera frame basis vectors
+    u: Vec3,
+    v: Vec3,
+    w: Vec3,
 }
 
 impl Camera {
-    pub fn new(aspect_ratio: f64, image_width: i32, samples_per_pixel: i32, max_depth: i32) -> Camera {
+    pub fn new(
+        aspect_ratio: f64,
+        image_width: i32,
+        samples_per_pixel: i32,
+        max_depth: i32,
+        vfov: f64,        // Vertical view angle (field of view)
+        look_from: Point, // Point camera is looking from
+        look_at: Point,   // Point camera is looking at
+        vup: Vec3,        // Camera-relative "up" direction
+    ) -> Camera {
         // Ensure that height is bigger than 1
         let image_height = max(1, (image_width as f64 / aspect_ratio) as i32);
-        let center = Point::ZERO;
+        let center = look_from;
 
         // Determine viewport dimensions (assuming right-handed coordinates)
-        let focal_length = 1.0;
-        // Choose an arbitrary viewport height and scale the width to the desired aspect ratio
-        let viewport_height = 2.0;
+        let focal_length = (look_from - look_at).length();
+        let theta = degrees_to_radians(vfov);
+        let h = f64::tan(theta / 2.0);
+        let viewport_height = 2.0 * h * focal_length;
         // We don't use aspect_ratio here because actual aspect ratio may be different due to integer image dimensions
         let viewport_width = viewport_height * (image_width as f64 / image_height as f64);
 
+        // Calculate the u,v,w unit basis vectors for the camera coordinate frame.
+        let w = (look_from - look_at).normalize();
+        let u = Vec3::cross(vup, w).normalize();
+        let v = Vec3::cross(w, u);
+
         // Vectors across the horizontal and down the vertical viewport edges
-        let viewport_u = Vec3::new(viewport_width, 0.0, 0.0);
-        let viewport_v = Vec3::new(0.0, -viewport_height, 0.0);
+        let viewport_u = viewport_width * u;
+        let viewport_v = viewport_height * -v;
 
         // Distances between pixel horizontally and vertically
         let pixel_delta_u = viewport_u / (image_width as f64);
         let pixel_delta_v = viewport_v / (image_height as f64);
 
         // Location of the upper left pixel
-        let viewport_distance = Vec3::new(0.0, 0.0, focal_length);
+        let viewport_distance = focal_length * w;
         let viewport_upper_left = center - viewport_distance - (viewport_u + viewport_v) / 2.0;
         let pixel00_loc = viewport_upper_left + 0.5 * (pixel_delta_u + pixel_delta_v);
 
@@ -58,6 +77,9 @@ impl Camera {
             pixel00_loc,
             pixel_delta_u,
             pixel_delta_v,
+            u,
+            v,
+            w,
         }
     }
 
