@@ -45,6 +45,9 @@ fn main() {
     let look_from = Point::new(-2.0, 2.0, 1.0);
     let look_at = Point::new(0.0, 0.0, -1.0);
     let vup = Vec3::new(0.0, 1.0, 0.0);
+
+    let defocus_angle = 10.0;
+    let focus_dist = 3.4;
     let camera = Camera::new(
         aspect_ratio,
         image_width,
@@ -54,6 +57,8 @@ fn main() {
         look_from,
         look_at,
         vup,
+        defocus_angle,
+        focus_dist,
     );
 
     // TODO: execution time
